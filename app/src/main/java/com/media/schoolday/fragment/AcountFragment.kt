@@ -109,7 +109,7 @@ class AcountFragment: Fragment(), AnkoLogger {
 
         val account = listOf("Orang tua","Guru")
 
-        selector("Pilih Accout",account) { i ->
+        activity.selector("Pilih Accout",account) { i ->
             val register = account[i]
             selector("Pilih Sekolah",sekolah){i ->
 
