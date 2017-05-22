@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginEnd="@dimen/top_down_margin"
+    android:layout_marginStart="@dimen/top_down_margin"
+    android:orientation="vertical">
+
+
+
+    <Spinner
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:id="@+id/spNewsPostTopic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true" />
+
+
+    <ScrollView
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/spNewsPostTopic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/linearMenuPost">
+        <LinearLayout
+            android:layout_marginTop="@dimen/default_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/lineaScroll">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/default_margin">
+
+                <EditText
+                    android:id="@+id/tiNewsPostTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/judul" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:id="@+id/textInputLayout3">
+
+                <EditText
+                    android:id="@+id/tiNewsPostDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/topik_berita" />
+            </android.support.design.widget.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/linearMain"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+    <LinearLayout
+        android:id="@+id/linearMenuPost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
+
+            <Button
+                android:id="@+id/btNewsPostDraft"
+                android:layout_width="72dp"
+                android:layout_height="wrap_content"
+                android:text="@string/action_draft" />
+
+
+            <ImageButton
+                android:id="@+id/ibNewsPostChild"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/action_add_user"
+                app:srcCompat="@drawable/ic_group_add_black_24dp" />
+
+            <ImageButton
+                android:id="@+id/ibNewsPostImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/action_add_image"
+                app:srcCompat="@drawable/ic_photo_camera_black_24dp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/btNewsPostSend"
+                android:layout_width="72dp"
+                android:layout_height="match_parent"
+                android:text="@string/action_post" />
+
+            <ImageButton
+                android:id="@+id/ibNewsPostDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/action_remove_image"
+                app:srcCompat="@drawable/ic_delete_black_24dp" />
+    </LinearLayout>
+
+</RelativeLayout>
