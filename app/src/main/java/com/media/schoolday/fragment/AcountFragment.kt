@@ -2,17 +2,21 @@ package com.media.schoolday.fragment
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import com.media.schoolday.R
 import com.media.schoolday.SchoolApp
+import com.media.schoolday.models.model.FilterArg
+import com.media.schoolday.models.model.FilterModel
 import com.media.schoolday.models.model.ResponProfile
 import com.media.schoolday.utility.DbLocal
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_profile.view.*
-import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.*
+import org.jetbrains.anko.appcompat.v7.toolbar
 
 
 class AcountFragment: Fragment(), AnkoLogger {
@@ -98,6 +102,51 @@ class AcountFragment: Fragment(), AnkoLogger {
         super.onDetach()
     }
 
+    fun registrasi(){
+        val sekolah = ArrayList<String>()
+//        var accoutRegister :String? = null
+        DbLocal.schoolList()?.forEach { sekolah.add(it.nama!!)  }
+
+        val account = listOf("Orang tua","Guru")
+
+        selector("Pilih Accout",account) { i ->
+            val register = account[i]
+            selector("Pilih Sekolah",sekolah){i ->
+
+                val cari = FilterModel(FilterArg(sekolah[i]))
+
+                alert {
+                    customView {
+                        verticalLayout {
+                            toolbar {
+                                id = R.id.dialog_toolbar
+                                lparams(width = matchParent, height = wrapContent)
+                                backgroundColor = ContextCompat.getColor(ctx, R.color.colorPrimary)
+                                setTitleTextColor(ContextCompat.getColor(ctx, android.R.color.white))
+                                if(register == account[0])
+                                    title = "Nomor Nis anak"
+                                else
+                                    title = "Nomor Handphone anda"
+                            }
+
+                            val nis = editText { padding = dip(20) }
+                            positiveButton("REGISTER") {
+                                val arg = nis.text.toString()
+
+                                if(register == (account[0]))
+                                    getAnak(cari, arg)
+                                else
+                                    getGuru(cari, arg)
+
+                            }
+                        }
+                    }
+                }.show()
+            }
+        }
+
+
+    }
 }
 
 
