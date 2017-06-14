@@ -2,192 +2,260 @@ package com.media.schoolday.fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.support.design.widget.TextInputEditText
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
-import android.widget.EditText
 import android.widget.TextView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.media.schoolday.R
-import com.media.schoolday.models.model.Activity
-import com.media.schoolday.models.model.PostActivities
-import com.media.schoolday.models.model.Student
+import com.media.schoolday.models.Aktifitas
+import com.media.schoolday.models.PostActivities
+import com.media.schoolday.models.PostActivity
 import com.media.schoolday.utility.DbLocal
-import kotlinx.android.synthetic.main.fragment_news_activity.*
+import com.media.schoolday.utility.PfUtil
+import kotlinx.android.synthetic.main.activity_news.*
 import kotlinx.android.synthetic.main.fragment_news_activity.view.*
 import kotlinx.android.synthetic.main.input_item.view.*
-import kotlinx.android.synthetic.main.list_view.view.*
-import org.jetbrains.anko.selector
-import org.jetbrains.anko.toast
-
-
+import org.jetbrains.anko.AnkoLogger
+import org.json.JSONObject
+import java.util.*
 
 
 /*
  * Created by yosi on 21/05/2017.
  */
 
-class ActitivityFragment: Fragment(){
+class ActitivityFragment: Fragment(),AnkoLogger{
 
-    private val listActivity = ArrayList<Activity>()
+    private val listPost = ArrayList<PostActivities>()
     interface OnItemClickListener {
-        fun onAddActivity(args: PostActivities)
-        fun onClickItem(arg: String)
         fun sendMessage(arg: String)
     }
     lateinit var views: View
     lateinit var root: View
-
-    val ID_KEY = "id"
-    var idKey: String? = null
+    lateinit var adapter: ArrayAdapter<PostActivities>
+    var nomorID = ""
+    var kegitan = ""
+    var idKey: String = ""
+    var status = false
     var callback: OnItemClickListener? = null
 
     companion object{
 
-        fun newInstance(idNews: String): ActitivityFragment{
+        fun newInstance(idNews: String,kegiatan: String): ActitivityFragment{
             val fragment = ActitivityFragment()
             val bundle = Bundle()
             fragment.idKey = idNews
+            fragment.kegitan = kegiatan
             bundle.putString("id", idNews )
             fragment.arguments = bundle
             return fragment
         }
-
-//        fun newInstance(): ActitivityFragment = newInstance()
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-//        idKey = savedInstanceState?.getString("id")
-//        context.toast(idKey.toString())
         setHasOptionsMenu(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         callback = activity as? OnItemClickListener
-        context.toast(idKey.toString())
-//        if(idKey == "activity"){
-            root = inflater!!.inflate(R.layout.fragment_news_activity,container,false)
-            activityEnry(root)
-//        }
-//        else {
-//            root = inflater!!.inflate(R.layout.list_view,container,false)
-//            listUser(root)
-//        }
+//        context.toast(idKey.toString())
+        root = inflater!!.inflate(R.layout.fragment_news_activity,container,false)
+        adapterUser()
+        root.etNewsActivityAnak.visibility = View.GONE
+        val toolbar = activity.findViewById(R.id.toolbarNews) as Toolbar
+        (activity as AppCompatActivity).setSupportActionBar( toolbar )
+        toolbar.title = idKey
 
         return root
     }
 
-    fun activityEnry(entry: View){
-        listActivity()?.forEach {
-            views = LayoutInflater.from(activity.baseContext).inflate(R.layout.input_item, null)
-            if(it != "Umum"){
-                val edit = EditText(context)
-                with(edit){
-                    hint = it
-                    id = View.generateViewId()
-                    tag = it
-                }
-                views.inputLayout.addView(edit)
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        activity.toolbarNews.title = "Kelas $idKey"
+        activity.toolbarNews.setNavigationOnClickListener() {
+            if (status)
+                editChilde()
+            else{
+                activity.toolbarNews.title = "Posting Berita"
+                activity.onBackPressed()
             }
+        }
+        hideKeyboard()
+
+    }
+
+    fun adapterUser(){
+        adapter = object : ArrayAdapter<PostActivities>(context,android.R.layout.simple_list_item_1,listPost){
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+                val item = getItem(position)
+                var vi = convertView
+                if (vi == null){
+                    vi = LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_1, parent, false)
+                }
+                val name = vi!!.findViewById(android.R.id.text1) as TextView
+//                val nis = vi.findViewById(android.R.id.text2) as TextView
+                name.text = item.name
+//                nis.text = item.nis
+                vi.setOnClickListener {
+                    view?.etNewsActivityAnak?.setText(item.name)
+                    nomorID = item.name!!
+                    status = true
+                    root.listNewsActivityUser.visibility = View.GONE
+                    root.etNewsActivityAnak.visibility = View.VISIBLE
+                    postEdit(item)
+                }
+                return vi
+            }
+        }
+        adapter.setNotifyOnChange(true)
+        root.listNewsActivityUser.adapter = adapter
+        DbLocal.activities().forEach { callback?.sendMessage(it.toString()) }
+        if(DbLocal.activities().filter { it.kelas == idKey && it.kegiatan == kegitan }.isEmpty() ) {
+
+            listPost.addAll(createListActivity())
+            adapter.notifyDataSetChanged()
+        }
+        else{
+            listPost.addAll(DbLocal.activities())
+            adapter.notifyDataSetChanged()
+        }
+    }
+
+    fun removeView(){
+        root.linearActivityInput.removeAllViews()
+        root.etNewsActivityAnak.setText("")
+    }
+
+    fun postEdit(post: PostActivities){
+
+        post.aktifitas.forEach {
+            views = LayoutInflater.from(activity.baseContext).inflate(R.layout.input_item, null)
+            val edit = TextInputEditText(context)
+            with(edit){
+                hint = it.title
+                id = View.generateViewId()
+                tag = it.title
+                setText(it.description)
+            }
+
+            views.inputLayout.addView(edit)
             root.linearActivityInput.addView(views)
         }
     }
 
-    fun listUser(list: View){
-        val student = DbLocal.studentList().filter { it.kelas == idKey }
-        val adapter = ChildAdapter(context,student)
-        list.simple_list.adapter = adapter
-
-    }
-
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        hideKeyboard()
-        view?.ibNewsActivityAnak?.setOnClickListener {
-            hideKeyboard()
-            val list = DbLocal.studentList()
-                    .filter { it.kelas == idKey }
-                    .map { it.nama }
-            activity.selector("Kelas ${idKey}", list) { i ->
-//                val aktivitas = activity.supportFragmentManager.findFragmentByTag("activity") as ActitivityFragment
-                editAnak(list[i])
+    fun postSave(){
+        if(listPost.isNotEmpty()) {
+            val post = listPost.filter { it.name == nomorID }.first()
+            post.aktifitas.forEach {
+                val edit = root.findViewWithTag(it.title) as TextInputEditText
+                it.description = edit.text.toString()
             }
-//            callback?.onClickItem(idKey as String)
-
-        }
-
-    }
-    fun addToList(){
-        val listEntryActivity = ArrayList<Activity>()
-        listActivity()?.forEach {
-            if(it != "Umum"){
-                val edit = root.findViewWithTag(it) as EditText
-                val activity = Activity()
-                activity.title = it
-                activity.description = edit.text.toString()
-                listEntryActivity.add(activity)
-//                callback?.sendMessage(it +": "+ edit.text)
-            }
+            adapter.notifyDataSetChanged()
         }
     }
-    fun listActivity():ArrayList<String>?{
 
+    fun createListActivity(): ArrayList<PostActivities>{
+
+        callback?.sendMessage("kelas $idKey")
+        val post = ArrayList<PostActivities>()
+
+        val listEntryPost = DbLocal.studentList().filter { it.kelas == idKey }
+        listEntryPost.forEach {
+            callback?.sendMessage(it.nis+ " "+it.nama)
+            val postActivity = PostActivities()
+            val listEntryActivity = ArrayList<Aktifitas>()
+
+            listActivity().forEach {
+                val aktifitas = Aktifitas()
+                aktifitas.title = it
+                aktifitas.description = ""
+                listEntryActivity.add(aktifitas)
+            }
+            postActivity.apply {
+                callback?.sendMessage(it.nis+ " "+it.nama)
+                nis = it.nis
+                name = it.nama
+                school = it.sekolah
+                kelas = it.kelas
+                kegiatan = kegitan
+                aktifitas.addAll(listEntryActivity)
+
+            }
+            post.add(postActivity)
+        }
+        return post
+    }
+
+    fun listActivity():ArrayList<String>{
         val profile = DbLocal.getProfile()
         val sekolah = DbLocal.schoolList()
         if(sekolah != null) {
             val filter = sekolah.filter { it.nama == profile!!.teacher.first().sekolah }
-            return filter.first().activity
+            val kegitan = filter.first().activity?.
+                    filter { it.judul == kegitan && it.status == true }?.
+                    map{ it.deskripsi} as ArrayList<String>
+            return kegitan
         }
         else {
-            return null
+            return ArrayList<String>()
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater?.inflate(R.menu.fragment_menu,menu)
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when(item?.itemId){
+        when(item?.itemId){
             R.id.item_save -> {
-                context.toast("test save")
-                true
+                if(status){
+                    postSave()
+                    editChilde()
+                }
+
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-    fun editAnak(nama: String){
-        etNewsActivityAnak.text.insert(0,nama)
+//        activity.supportFragmentManager.popBackStack()
+        return true
     }
 
     fun hideKeyboard(){
         val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
-}
-class ChildAdapter(ctx: Context, student: List<Student>): ArrayAdapter<Student>(ctx,0, student){
-    private val cx = ctx
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var v = convertView
-        val user = getItem(position)
-        // Check if an existing view is being reused, otherwise inflate the view
-        if(v != null){
-            v = LayoutInflater.from(cx).inflate(android.R.layout.simple_list_item_2, parent, false)
-        }
-        val name = v?.findViewById(android.R.id.text1) as TextView
-        val nis = v?.findViewById(android.R.id.text2) as TextView
-        name.text = user.nama
-        nis.text = user.nis
-        v.setOnClickListener {
-            cx.toast( user.nama)
-        }
-        // Return the completed view to render on screen
-        return v
+    fun cacheData(){
+        val actitivity = PostActivity(listPost)
+        val gson = Gson()
+        val type = object : TypeToken<PostActivity>() {}.type
+        val json = gson.toJson(actitivity,type)
+        callback?.sendMessage(json)
+        PfUtil.saveJsonObject("post","activity",JSONObject(json))
     }
+
+    fun editChilde(){
+        if (root.linearActivityInput.childCount > 0 ) {
+            hideKeyboard()
+            removeView()
+            cacheData()
+        }
+        root.etNewsActivityAnak.visibility = View.GONE
+        root.listNewsActivityUser.visibility = View.VISIBLE
+        status = false
+
+
+    }
+    override fun onDetach() {
+        callback = null
+        super.onDetach()
+    }
+
 }

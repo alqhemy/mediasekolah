@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.media.schoolday.R
 import com.media.schoolday.activity.NewsActivity
-import com.media.schoolday.models.model.NewsModel
+import com.media.schoolday.models.NewsModel
 import com.media.schoolday.utility.inflate
 import kotlinx.android.synthetic.main.list_news_home.view.*
 import org.jetbrains.anko.onClick
@@ -29,11 +29,15 @@ class HomeAdapter(data: ArrayList<NewsModel>, ctx: Context): RecyclerView.Adapte
 
     class HomeViewHolder(var itemview: View) : RecyclerView.ViewHolder(itemview) {
         fun bind(news: NewsModel) = with(itemview) {
+            tvHomeItemSekolah.text = news.sekolah
             tvHomeItemUser.text = news.userName
             tvHomeItemDate.text = SimpleDateFormat("dd-MM-yyyy HH:mm").format(news.timeCreated).toString()
             tvHomeItemTitle.text = news.title
             tvHomeItemDescription.text = news.description
-            tvHomeItemTopic.text = news.topic
+            if(news.topic == "Umum")
+                tvHomeItemTopic.text = news.category+" "+news.topic
+            else
+                tvHomeItemTopic.text = news.category+" Kelas "+news.topic
             tvHomeItemUserTitle.text = news.userTitle
 
             onClick {

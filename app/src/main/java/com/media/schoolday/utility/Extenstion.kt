@@ -6,13 +6,13 @@ package com.media.schoolday.utility
 
 
 import android.content.Context
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.media.schoolday.R
-import com.squareup.picasso.Picasso
 
 //import com.bumptech.glide.Glide
 
@@ -33,11 +33,22 @@ fun ViewGroup.inflate(layoutRes: Int): View {
 fun ViewGroup.inflate(ctx: Context, layoutRes: Int): View {
     return LayoutInflater.from(ctx).inflate(layoutRes, this, false)
 }
+//
+//fun ImageView.loadImg(imageUrl: String) {
+//    if (TextUtils.isEmpty(imageUrl)) {
+//        Picasso.with(context).load(R.drawable.imagesholder).into(this)
+//    } else {
+//        Picasso.with(context).load(imageUrl).placeholder(R.drawable.imagewait).into(this)
+//
+//    }
+//}
+fun ImageView.loadWithGlade(imageUrl: String){
+    Glide.with(context)
+            .load(imageUrl)
+            .placeholder(R.drawable.imagewait)
+            .crossFade()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .into(this)
 
-fun ImageView.loadImg(imageUrl: String) {
-    if (TextUtils.isEmpty(imageUrl)) {
-        Picasso.with(context).load(R.drawable.ic_menu_gallery).into(this)
-    } else {
-        Picasso.with(context).load(imageUrl).into(this)
-    }
+
 }

@@ -1,28 +1,26 @@
 package com.media.schoolday.fragment
 
+import android.app.ProgressDialog
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import com.media.schoolday.R
 import com.media.schoolday.SchoolApp
-import com.media.schoolday.models.model.FilterArg
-import com.media.schoolday.models.model.FilterModel
-import com.media.schoolday.models.model.ResponProfile
+import com.media.schoolday.models.ResponProfile
 import com.media.schoolday.utility.DbLocal
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_profile.view.*
-import org.jetbrains.anko.*
-import org.jetbrains.anko.appcompat.v7.toolbar
+import org.jetbrains.anko.AnkoLogger
 
 
 class AcountFragment: Fragment(), AnkoLogger {
     lateinit var adapterChild:ArrayAdapter<String>
     lateinit var viewAccount : View
-
+    lateinit var progres: ProgressDialog
+    var responStatus = false
     interface OnItemClickListener {
         fun onGetList(args: String):Boolean
 
@@ -47,6 +45,7 @@ class AcountFragment: Fragment(), AnkoLogger {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         callback = activity as? OnItemClickListener
+        progres = ProgressDialog(context)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -79,7 +78,7 @@ class AcountFragment: Fragment(), AnkoLogger {
     }
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tvAccountAnak.setOnClickListener { callback!!.onGetList("students") }
+        tvAccountAnak.setOnClickListener {  }
         val user = SchoolApp.user?.currentUser
         tvProfileEmail.text = user?.email
         tvProfileName.text = user?.displayName
@@ -101,52 +100,7 @@ class AcountFragment: Fragment(), AnkoLogger {
         callback = null
         super.onDetach()
     }
-
-    fun registrasi(){
-        val sekolah = ArrayList<String>()
-//        var accoutRegister :String? = null
-        DbLocal.schoolList()?.forEach { sekolah.add(it.nama!!)  }
-
-        val account = listOf("Orang tua","Guru")
-
-        activity.selector("Pilih Accout",account) { i ->
-            val register = account[i]
-            selector("Pilih Sekolah",sekolah){i ->
-
-                val cari = FilterModel(FilterArg(sekolah[i]))
-
-                alert {
-                    customView {
-                        verticalLayout {
-                            toolbar {
-                                id = R.id.dialog_toolbar
-                                lparams(width = matchParent, height = wrapContent)
-                                backgroundColor = ContextCompat.getColor(ctx, R.color.colorPrimary)
-                                setTitleTextColor(ContextCompat.getColor(ctx, android.R.color.white))
-                                if(register == account[0])
-                                    title = "Nomor Nis anak"
-                                else
-                                    title = "Nomor Handphone anda"
-                            }
-
-                            val nis = editText { padding = dip(20) }
-                            positiveButton("REGISTER") {
-                                val arg = nis.text.toString()
-
-                                if(register == (account[0]))
-                                    getAnak(cari, arg)
-                                else
-                                    getGuru(cari, arg)
-
-                            }
-                        }
-                    }
-                }.show()
-            }
-        }
-
-
-    }
 }
+
 
 

@@ -1,4 +1,4 @@
-package com.media.schoolday.models.model
+package com.media.schoolday.models
 
 import com.google.gson.annotations.SerializedName
 
@@ -17,18 +17,21 @@ class SchoolModel {
     val telp1: String? = null
     val telp2: String? = null
     val kota: String? = null
-    val activity: ArrayList<String>? = null
+    val activity: ArrayList<Kegiatan>? = null
     val kelas: ArrayList<String>? = null
+    val topik: ArrayList<String>? = null
 }
 
 class FilterModel(val filter: FilterArg)
 
 class FilterArg(val sekolah: String)
 
-class ProfilAnak(val child: Anak )
+class ProfilAnak(val set: String, val child: Anak )
 
 class Anak(val sekolah: String, val nis: String)
 
-class ProfileGuru(val teacher: Guru)
+class ProfileGuru(val set: String, val teacher: Guru)
 
 class Guru(val id: String, val sekolah: String)
+
+class Kegiatan(val judul: String, val deskripsi: String, val status: Boolean)

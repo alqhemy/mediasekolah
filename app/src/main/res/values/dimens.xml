@@ -14,6 +14,6 @@
     <!--Font size-->
     <dimen name="medium_caption">12sp</dimen>
     <dimen name="small_caption">10sp</dimen>
-
+    <dimen name="head_title1">20sp</dimen>
 
 </resources>

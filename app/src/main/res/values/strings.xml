@@ -2,8 +2,8 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="app_name">SchoolDay</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">Media Sekolah</string>
+    <string name="action_settings">Clear Database</string>
     <string name="fragment_home">fragment_home</string>
     <string name="account_guru">Account Guru</string>
     <string name="account_anak">Tambah Account</string>
@@ -22,7 +22,9 @@
     <string name="comment_view">Comment</string>
     <string name="sign_out">Sign Out</string>
     <string name="user_account">User Account</string>
-    <string name="judul">Judul..</string>
+    <string name="judul">Judul berita..</string>
+    <string name="description">Isi berita...</string>
+    <string name="action_add">Add</string>
     <string name="action_add_user">Add User</string>
     <string name="action_add_image">Add Image</string>
     <string name="action_remove_image">Remove Image</string>
@@ -32,4 +34,7 @@
     <string name="desc_picture_upload">Picture upload</string>
     <string name="input_activitity">Input Activitity</string>
     <string name="item_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_edit">Edit</string>
 </resources>

@@ -2,7 +2,7 @@ package com.media.schoolday.utility
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.media.schoolday.models.model.*
+import com.media.schoolday.models.*
 import org.json.JSONArray
 
 /*
@@ -11,7 +11,7 @@ import org.json.JSONArray
 
 object DbLocal{
     val gson = Gson()
-
+    var text = ""
     fun token():String{
         val userid = PfUtil.getJsonObject("user","user")
         if(userid.isNull("token")){
@@ -43,8 +43,8 @@ object DbLocal{
             return userPorfile
         }
     }
-    fun schoolList():ArrayList<SchoolModel>?{
-        val data = PfUtil.getJsonObject("sekolah","sekolah")
+    fun schoolList():ArrayList<SchoolModel>{
+        val data = PfUtil.getJsonObject("school","school")
         if(data.length() > 0 ) {
             val sekolah = data.get("data") as JSONArray
             val type = object : TypeToken<ArrayList<SchoolModel>>() {}.type
@@ -56,7 +56,7 @@ object DbLocal{
         }
     }
     fun studentList():ArrayList<Student> {
-        val data = PfUtil.getJsonObject("sekolah", "siswa")
+        val data = PfUtil.getJsonObject("school", "siswa")
         if(data.isNull("data")) return ArrayList<Student>()
         else{
             val student = data.getJSONArray("data")
@@ -66,7 +66,7 @@ object DbLocal{
         }
     }
     fun teacherList():ArrayList<Teacher>{
-        val data = PfUtil.getJsonObject("sekolah","guru")
+        val data = PfUtil.getJsonObject("school","guru")
         if(data.length() > 0){
             val teacher = data.getJSONArray("data")
             val type = object : TypeToken<ArrayList<Teacher>>() {}.type
@@ -78,7 +78,7 @@ object DbLocal{
         }
     }
     fun newsList():ArrayList<NewsModel>{
-        val data = PfUtil.getJsonObject("sekolah","news")
+        val data = PfUtil.getJsonObject("school","news")
         if(data.isNull("news")) {
             return ArrayList<NewsModel>()
         }
@@ -90,4 +90,63 @@ object DbLocal{
         }
     }
 
+    fun activities(): ArrayList<PostActivities>{
+        val data = PfUtil.getJsonObject("post","activity")
+        if(data.isNull("activities")) {
+            return ArrayList<PostActivities>()
+        }
+        else{
+            val news = data.getJSONArray("activities")
+            val type = object : TypeToken<ArrayList<PostActivities>>() {}.type
+            val result: ArrayList<PostActivities> = gson.fromJson(news.toString(), type)
+            return result
+        }
+    }
+    fun postNews(): PostNews?{
+        val data = PfUtil.getJsonObject("post","news")
+        if(data.isNull("title")) {
+            return null
+        }
+        else{
+            val type = object : TypeToken<PostNews>() {}.type
+            val result: PostNews = gson.fromJson(data.toString(), type)
+            return result
+        }
+    }
+
+    fun postPhoto():PostPhoto?{
+        val data = PfUtil.getJsonObject("post","photo")
+        if(data.isNull("gambar")) {
+            return null
+        }
+        else{
+            val type = object : TypeToken<PostPhoto>() {}.type
+            val result: PostPhoto = gson.fromJson(data.toString(), type)
+            return result
+        }
+    }
+
+    fun getPostId():ResponNewsId?{
+        val data = PfUtil.getJsonObject("news","newsId")
+        if(data.isNull("aktifitas")) {
+            return null
+        }
+        else{
+            val type = object : TypeToken<ResponNewsId>() {}.type
+            val result: ResponNewsId = gson.fromJson(data.toString(), type)
+            return result
+        }
+    }
+
+    fun getParent():ResponUsers?{
+        val data = PfUtil.getJsonObject("user","parent")
+        if(data.isNull("data")) {
+            return null
+        }
+        else{
+            val type = object : TypeToken<ResponUsers>() {}.type
+            val result: ResponUsers = gson.fromJson(data.toString(), type)
+            return result
+        }
+    }
 }

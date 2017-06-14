@@ -12,15 +12,12 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.LinearLayout
-import android.widget.ScrollView
-import android.widget.TextView
+import android.widget.*
 import com.bumptech.glide.Glide
 import com.ceylonlabs.imageviewpopup.ImagePopup
 import com.media.schoolday.R
 import com.media.schoolday.SchoolApp
-import com.media.schoolday.models.model.*
+import com.media.schoolday.models.*
 import com.media.schoolday.utility.BitmapScaler
 import com.media.schoolday.utility.DbLocal
 import com.media.schoolday.utility.loadWithGlade
@@ -32,10 +29,7 @@ import kotlinx.android.synthetic.main.fragment_find.view.*
 import kotlinx.android.synthetic.main.imageview_item.view.*
 import kotlinx.android.synthetic.main.list_item_find.view.*
 import kotlinx.android.synthetic.main.list_news_home.view.*
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.padding
-import org.jetbrains.anko.textColor
-import org.jetbrains.anko.toast
+import org.jetbrains.anko.*
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 
@@ -212,22 +206,37 @@ class ReadFragment: Fragment(),AnkoLogger{
         root.linearReadAktifitas.removeAllViews()
 //        val siswa = DbLocal.getProfile()?.child?.map { it.nama } as ArrayList<String>
         list.forEachIndexed { index, getActivities ->
-            var tvAnak = TextView(context)
-            var card = CardView(context)
+            val tvAnak = TextView(context)
+            val tvComment = TextView(context)
+            val card = CardView(context)
+            val layout = LinearLayout(context)
+            val layout2 = LinearLayout(context)
+            val image = ImageView(context)
+            layout.orientation = LinearLayout.HORIZONTAL
+            layout2.orientation = LinearLayout.VERTICAL
+            card.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,120)
 
-            card.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,96)
+            image.image = activity.resources.getDrawable(R.drawable.ic_library_books_black_24dp)
+            image.setPadding(20,10,20,5)
             with(tvAnak){
                 text = list[index].name
-                padding = 20
+                setPadding(20,10,0,5)
                 gravity = Gravity.CENTER_VERTICAL
                 layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT)
-                textColor = resources.getColor(R.color.colorPrimaryDark)
+                        ViewGroup.LayoutParams.MATCH_PARENT, 1F)
+//                textColor = resources.getColor(R.color.colorPrimaryDark)
                 setTypeface(Typeface.DEFAULT_BOLD)
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 14F)
 
             }
-            tvAnak.setOnClickListener {
+            with(tvComment){
+                text = "Komentar :" + list[index].comments.count().toString()
+                setPadding(20,0,0,0)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 12F)
+                textColor = resources.getColor(R.color.colorText38)
+
+            }
+            layout.setOnClickListener {
                 val id = list[index].nis
                 val ft = activity.supportFragmentManager.beginTransaction()
                 with(ft) {
@@ -238,7 +247,12 @@ class ReadFragment: Fragment(),AnkoLogger{
                     commit()
                 }
             }
-            card.addView(tvAnak)
+
+            layout.addView(tvAnak)
+            layout.addView(image)
+            layout2.addView(layout)
+            layout2.addView(tvComment)
+            card.addView(layout2)
             root.linearReadAktifitas.addView(card)
         }
 

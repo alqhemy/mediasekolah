@@ -41,10 +41,6 @@ class TabPageAdapter(title: Array<String>,fm: FragmentManager) : FragmentStatePa
 
     fun getFragment(position : Int): Fragment? = instanceFragment.get(position).get()
 
-    override fun getPageTitle(position: Int): CharSequence = mTitle[position]
-
-//    fun addPager(title: String){
-//        mTitle
-//    }
+    override fun getPageTitle(position: Int): CharSequence? = null
 
 }

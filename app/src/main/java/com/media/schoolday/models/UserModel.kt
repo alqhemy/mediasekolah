@@ -1,4 +1,4 @@
-package com.media.schoolday.models.model
+package com.media.schoolday.models
 
 import com.google.gson.annotations.SerializedName
 
@@ -9,6 +9,8 @@ import com.google.gson.annotations.SerializedName
 class ResponUser( val data: User)
 
 class ResponProfile(val user: Profile, val child: ArrayList<Student>,val teacher: ArrayList<Teacher>)
+
+class ResponUsers(val total: Int, val data: ArrayList<Profile>)
 
 data class User(val email: String, val uid: String, val name: String, val token: String)
 
@@ -22,10 +24,19 @@ data class Profile(
         val email: String,
         val name: String,
         val uid: String,
-        val child: ArrayList<Student>,
-        val teacher: Teacher
+        val playerid: String,
+        val child: ArrayList<profileStudent>,
+        val teacher: profileTeacher
 )
 
+class profileTeacher(
+        val id: String,
+        val sekolah: String
+)
+class  profileStudent(
+        val nis: String,
+        val sekolah: String
+)
 data class Teacher(
         @SerializedName("_id")
         val id: String,

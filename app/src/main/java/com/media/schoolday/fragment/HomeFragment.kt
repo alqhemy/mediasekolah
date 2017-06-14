@@ -11,8 +11,8 @@ import com.media.schoolday.MainActivity
 import com.media.schoolday.R
 import com.media.schoolday.SchoolApp
 import com.media.schoolday.adapter.HomeAdapter
-import com.media.schoolday.models.model.NewsModel
-import com.media.schoolday.models.model.ResponNews
+import com.media.schoolday.models.NewsModel
+import com.media.schoolday.models.ResponNews
 import com.media.schoolday.utility.DbLocal
 import com.orhanobut.wasp.Callback
 import com.orhanobut.wasp.Response
@@ -25,8 +25,7 @@ import org.json.JSONObject
  */
 
 class HomeFragment: Fragment(), AnkoLogger,MainActivity.OnItemClickListener {
-    private val realm
-        get() = io.realm.Realm.getDefaultInstance()
+
     lateinit var list:RecyclerView
     var title: String? = null
     val newsList = ArrayList<NewsModel>()
@@ -78,7 +77,7 @@ class HomeFragment: Fragment(), AnkoLogger,MainActivity.OnItemClickListener {
             SchoolApp.rest?.getNews(DbLocal.token(), object : Callback<ResponNews> {
                 override fun onSuccess(response: Response?, t: ResponNews?) {
                     val news = JSONObject(response?.body)
-                    SchoolApp.prefs?.saveJSONObject("sekolah","news",news)
+                    SchoolApp.prefs?.saveJSONObject("school","news",news)
                     updateAdapter(t!!.data)
                 }
                 override fun onError(error: WaspError?) {}
