@@ -6,9 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.media.schoolday.R
 import com.media.schoolday.SchoolApp
@@ -26,8 +23,6 @@ import org.json.JSONObject
 
 class Account : AppCompatActivity() {
     lateinit var progres: ProgressDialog
-    val profile = ArrayList<String>()
-    lateinit var adapterChild : ArrayAdapter<String>
     private var responStatus = false
 
 
@@ -40,17 +35,10 @@ class Account : AppCompatActivity() {
 
     fun createUi(){
 
-        adapterChild = object : ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, profile) {
-            override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-                return super.getView(position, convertView, parent)
-            }
-        }
-        adapterChild.setNotifyOnChange(true)
         getProfile()
 
         tvProfileEmail.text = DbLocal.getProfile()?.user?.email
         tvProfileName.text = DbLocal.getProfile()?.user?.name
-        listAccountProfile.adapter = adapterChild
 
         tvAccountAnak.setOnClickListener { registrasi() }
         val user = SchoolApp.user?.currentUser
@@ -64,20 +52,9 @@ class Account : AppCompatActivity() {
         }
     }
 
-    fun getArrayData(data: ResponProfile?): ArrayList<String>{
-        val listArray = ArrayList<String>()
-        with(listArray){
-            data?.child?.forEach { add(it.nama) }
-            data?.teacher?.forEach { add(it.nama) }
-        }
-        return listArray
-    }
 
     fun registrasi(){
-//        val sekolah = ArrayList<String>()
-//        var accoutRegister :String? = null
         val sekolah = DbLocal.schoolList()?.map { it.nama } as ArrayList<String>
-
         val account = listOf("Orang tua","Guru")
 
         selector("Pilih Accout",account) { i ->
@@ -223,13 +200,7 @@ class Account : AppCompatActivity() {
             override fun onSuccess(response: Response?, t: ResponProfile?) {
                 val data = JSONObject(response!!.body)
                 PfUtil.saveJsonObject("user","profile",data)
-//                profile.clear()
-//                profile.addAll(getArrayData(t))
-//                adapterChild.notifyDataSetChanged()
                 addAccount(t!!)
-//                val accout = supportFragmentManager.findFragmentByTag("account") as AcountFragment
-//                accout.updateAdapter()
-
             }
         })
     }
